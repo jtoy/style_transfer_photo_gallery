@@ -11,13 +11,15 @@ NC='\033[0m'
 transfer() { if [ $# -eq 0 ]; then echo "No arguments specified. Usage:\necho transfer /tmp/test.md\ncat /tmp/test.md | transfer test.md"; return 1; fi
 tmpfile=$( mktemp -t transferXXX ); if tty -s; then basefile=$(basename "$1" | sed -e 's/[^a-zA-Z0-9._-]/-/g'); curl --progress-bar --upload-file "$1" "https://transfer.sh/$basefile" >> $tmpfile; else curl --progress-bar --upload-file "-" "https://transfer.sh/$1" >> $tmpfile ; fi; cat $tmpfile; rm -f $tmpfile; }
 
-if ! [ -d "$1/stylized_gallery" ] ; then
-  mkdir "$1/stylized_gallery"
+ABS_PATH=`cd "$1"; pwd`
+
+if ! [ -d "$ABS_PATH/stylized_gallery" ] ; then
+  mkdir "$ABS_PATH/stylized_gallery"
 fi
 
-if [ -d "$1" ] ; then
+if [ -d "$ABS_PATH" ] ; then
   cd $1
-  for file in "$1"/*; do
+  for file in "$ABS_PATH"/*; do
     if [ -f "$file" ] ; then
       IMAGE="$(pwd -P)/${file##*/}"
       echo -e "${BLUE}$IMAGE ${YELLOW}is being processed...${NC}"
